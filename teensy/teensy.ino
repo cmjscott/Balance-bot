@@ -3,24 +3,28 @@
 #include "RobotController.h"
 
 SSC32 ssc;
-SSC32::Servo& twist   = ssc[0];
-SSC32::Servo& gripper = ssc[1];
+RobotController robot;
+
+const float X = 0;
+const float Y = 150;
+const float R = 100; // millimeters
+float t = 0;
 
 void setup()
 {
 	Serial1.begin(115200);
 	ssc.begin(Serial1);
+	ssc[0].config( 870, 1370,  90, 45);
+	ssc[1].config(1240, 1740,  90, 45);
+	ssc[2].config(1820, 2500,  45,  0);
+	ssc[3].config(1130, 2130, -45, 45);
+	robot.begin(ssc, 0, 1, 2, 3);
+	robot.config(/* TODO */); // millimeters
 }
 
 void loop()
 {
-	twist.set_degrees(45);
-	gripper.set_degrees(45);
-	ssc.commit(2000);
-	while (!ssc.is_done()) delay(10);
-
-	twist.set_position(2000);
-	gripper.set_position(2000);
-	ssc.commit(1000);
-	while (!ssc.is_done()) delay(10);
+	robot.set_pose(X + R * cos(2 * M_PI * t), Y + R * sin(2 * M_PI * t), 0, 0);
+	delay(100);
+	t += 0.1;
 }
