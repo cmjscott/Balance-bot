@@ -54,6 +54,9 @@ private:
 	SSC32::Servo *m_servo0, *m_servo1, *m_servo2, *m_servo3;
 	float m_L0, m_L1, m_L2, m_L3, m_L4;
 	float m_x, m_z, m_theta, m_phi;
+
+	friend void setup();
+	friend void loop();
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

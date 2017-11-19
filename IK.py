@@ -1,4 +1,4 @@
-from math import sqrt, cos, sin, acos, atan2
+from math import sqrt, cos, sin, acos, atan2, degrees
 import numpy as np
 
 
@@ -41,8 +41,8 @@ class Robot:
 
 if __name__ == '__main__':
 	from matplotlib import pyplot as plt
-	r = Robot(3, 1.5, 0.5, 1)
-	r.solve(-0.24, 0.75, -0.254)
+	r = Robot(427, 140, 100, 289)
+	r.solve(0, 50, 0)
 
 	x, y = zip(*r.getjoints())
 	plt.plot(x, y)
