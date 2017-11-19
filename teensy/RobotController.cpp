@@ -103,16 +103,25 @@ void RobotController::forward_kinematics()
 
 	const float xB = -m_L0 / 2 + m_L1 * cos(theta0);
 	const float zB = m_L1 * sin(theta0);
+
 	const float xE = m_L0 / 2 - m_L1 * cos(theta1);
 	const float zE = m_L1 * sin(theta1);
+
 	const float xD = xE - m_L2 * cos(theta2);
 	const float zD = zE - m_L2 * sin(theta2);
 
 	const float xBD = xB - xD;
 	const float zBD = zB - zD;
 
-	const float d = sqrt(sq(xB - xD) + sq(zB - zD));
+	const float d = sqrt(sq(xBD) + sq(zBD));
+
+	/*
+	if this calculates cos(CDB), shouldn't it be divided by (2 * d * L3)?
+	c^2 = a^2 + b^2 - 2*a*b*cos(C)  -> looks to be missing the "b" term?
+	*/
 	const float a = (sq(m_L3) - sq(m_L2) + sq(d)) / (2 * d);
+
+
 	const float h = sqrt(sq(m_L3) - sq(a));
 	const float xC = xD + (a * xBD - h * zBD) / d;
 	const float zC = zD + (h * xBD + h * zBD) / d;
@@ -152,7 +161,7 @@ void RobotController::inverse_kinematics()
 	const float arg_AC = atan2(zC, xAC);
 	const float mag_DF = sqrt(sq(xDF) + sq(zD));
 	const float arg_DF = atan2(zD, xDF);
-	
+
 	const float cos_CAB = (sq(mag_AC) + sq(m_L1) - sq(m_L2)) / (2 * m_L1 * mag_AC);
 	const float cos_EFD = (sq(mag_DF) + sq(m_L1) - sq(m_L2)) / (2 * m_L1 * mag_DF);
 	const float cos_EDF = (sq(mag_DF) + sq(m_L2) - sq(m_L1)) / (2 * m_L2 * mag_DF);
@@ -164,4 +173,3 @@ void RobotController::inverse_kinematics()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-
