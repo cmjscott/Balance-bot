@@ -8,7 +8,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-const float FILTER_PARAM = 0.98;
+const float FILTER_PARAM = 0.97;
 
 const float ACCEL_X_MINUS_G = -16450;
 const float ACCEL_X_PLUS_G  = +15900;
@@ -17,9 +17,10 @@ const float ACCEL_Y_PLUS_G  = +16000;
 const float ACCEL_Z_MINUS_G = -15700;
 const float ACCEL_Z_PLUS_G  = +16000;
 
-const float GYRO_X_ZERO =  -3.9;
-const float GYRO_Y_ZERO = -52.0;
-const float GYRO_Z_ZERO = -13.5;
+const float GYRO_X_ZERO =  -4;
+const float GYRO_Y_ZERO = -52;
+const float GYRO_Z_ZERO =  -5;
+const float GYRO_SCALE  = 1.15;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -122,6 +123,9 @@ public:
 	int16_t get_raw_accel_x() const {return m_raw_accel_x;}
 	int16_t get_raw_accel_y() const {return m_raw_accel_y;}
 	int16_t get_raw_accel_z() const {return m_raw_accel_z;}
+	int16_t get_raw_mag_x()   const {return m_raw_mag_x;}
+	int16_t get_raw_mag_y()   const {return m_raw_mag_y;}
+	int16_t get_raw_mag_z()   const {return m_raw_mag_z;}
 	int16_t get_raw_gyro_x()  const {return m_raw_gyro_x;}
 	int16_t get_raw_gyro_y()  const {return m_raw_gyro_y;}
 	int16_t get_raw_gyro_z()  const {return m_raw_gyro_z;}
@@ -145,6 +149,9 @@ private:
 	int16_t m_raw_accel_x;
 	int16_t m_raw_accel_y;
 	int16_t m_raw_accel_z;
+	int16_t m_raw_mag_x;
+	int16_t m_raw_mag_y;
+	int16_t m_raw_mag_z;
 	int16_t m_raw_gyro_x;
 	int16_t m_raw_gyro_y;
 	int16_t m_raw_gyro_z;

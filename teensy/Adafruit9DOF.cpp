@@ -44,9 +44,9 @@ void Adafruit9DOFClass::update()
 	const Quaternion half_gyro_axis =
 	{
 		0,
-		(m_raw_gyro_x - GYRO_X_ZERO) * dt * 0.5 * radians(2000) / 32768,
-		(m_raw_gyro_y - GYRO_Y_ZERO) * dt * 0.5 * radians(2000) / 32768,
-		(m_raw_gyro_z - GYRO_Z_ZERO) * dt * 0.5 * radians(2000) / 32768
+		(m_raw_gyro_x - GYRO_X_ZERO) * GYRO_SCALE * dt * 0.5 * radians(2000) / 32768,
+		(m_raw_gyro_y - GYRO_Y_ZERO) * GYRO_SCALE * dt * 0.5 * radians(2000) / 32768,
+		(m_raw_gyro_z - GYRO_Z_ZERO) * GYRO_SCALE * dt * 0.5 * radians(2000) / 32768
 	};
 
 	// Compute the estimated attitude using the gyroscopes only
