@@ -1,19 +1,21 @@
 #include <Wire.h>
 
-#include "MPU6050.h"
+#include "Adafruit9DOF.h"
 
 
-MPU6050Class MPU6050;
+Adafruit9DOFClass Adafruit9DOF;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void MPU6050Class::init()
+void Adafruit9DOFClass::init()
 {
 	Wire.begin();
 
-	write(PWR_MGMT_1, 0); // Wake up
-	write(ACCEL_CONFIG, 0 << 3); // Set accelerometers measuring range from -2g to 2g
-	write(GYRO_CONFIG, 3 << 3); // Set gyroscopes measuring range from -2000°/s to 2000°/s 
+	write(LSM303_ACCEL_ADDRESS, LSM303_ACCEL_CTRL_REG1_A, 0x57); // Wake up
+	write(L3GD20_ADDRESS, L3GD20_CTRL_REG1, 0x00);
+	write(L3GD20_ADDRESS, L3GD20_CTRL_REG1, 0x0F);
+	write(LSM303_ACCEL_ADDRESS, LSM303_ACCEL_CTRL_REG4_A, 0 << 4); // Set accelerometers measuring range from -2g to 2g
+	write(L3GD20_ADDRESS, L3GD20_CTRL_REG4, 3 << 4); // Set gyroscopes measuring range from -2000°/s to 2000°/s 
 
 	m_attitude = {1, 0, 0, 0};
 	m_last_update = micros();
@@ -21,7 +23,7 @@ void MPU6050Class::init()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void MPU6050Class::update()
+void Adafruit9DOFClass::update()
 {
 	// Get raw data
 	const unsigned long now = micros();
@@ -61,40 +63,43 @@ void MPU6050Class::update()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void MPU6050Class::write(uint8_t address, uint8_t value) const
+void Adafruit9DOFClass::write(uint8_t address, uint8_t reg, uint8_t value) const
 {
-	Wire.beginTransmission(MPU6050_ADDRESS);
-	Wire.write(address);
+	Wire.beginTransmission(address);
+	Wire.write(reg);
 	Wire.write(value);
 	Wire.endTransmission(true);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-uint8_t MPU6050Class::read(uint8_t address) const
+uint8_t Adafruit9DOFClass::read(uint8_t address, uint8_t reg) const
 {
-	Wire.beginTransmission(MPU6050_ADDRESS);
-	Wire.write(address);
+	Wire.beginTransmission(address);
+	Wire.write(reg);
 	Wire.endTransmission(false);
-	Wire.requestFrom(MPU6050_ADDRESS, uint8_t(1), uint8_t(true));
+	Wire.requestFrom(address, uint8_t(1), uint8_t(true));
 	return Wire.read();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void MPU6050Class::get_raw_values()
+void Adafruit9DOFClass::get_raw_values()
 {
-	Wire.beginTransmission(MPU6050_ADDRESS);
-	Wire.write(ACCEL_XOUT_H); // starting with register 0x3B (ACCEL_XOUT_H)
+	Wire.beginTransmission(LSM303_ACCEL_ADDRESS);
+	Wire.write(LSM303_ACCEL_OUT_X_L_A | 0x80);
 	Wire.endTransmission(false);
-	Wire.requestFrom(MPU6050_ADDRESS, uint8_t(14), uint8_t(true)); // request a total of 14 registers
-	m_raw_accel_x = Wire.read() << 8 | Wire.read();
-	m_raw_accel_y = Wire.read() << 8 | Wire.read();
-	m_raw_accel_z = Wire.read() << 8 | Wire.read();
-	m_raw_temp    = Wire.read() << 8 | Wire.read();
-	m_raw_gyro_x  = Wire.read() << 8 | Wire.read();
-	m_raw_gyro_y  = Wire.read() << 8 | Wire.read();
-	m_raw_gyro_z  = Wire.read() << 8 | Wire.read();
+	Wire.requestFrom(LSM303_ACCEL_ADDRESS, uint8_t(6), uint8_t(true));
+	m_raw_accel_x = Wire.read() | Wire.read() << 8;
+	m_raw_accel_y = Wire.read() | Wire.read() << 8;
+	m_raw_accel_z = Wire.read() | Wire.read() << 8;
+	Wire.beginTransmission(L3GD20_ADDRESS);
+	Wire.write(L3GD20_OUT_X_L | 0x80);
+	Wire.endTransmission(false);
+	Wire.requestFrom(L3GD20_ADDRESS, uint8_t(6), uint8_t(true));
+	m_raw_gyro_x  = Wire.read() | Wire.read() << 8;
+	m_raw_gyro_y  = Wire.read() | Wire.read() << 8;
+	m_raw_gyro_z  = Wire.read() | Wire.read() << 8;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
