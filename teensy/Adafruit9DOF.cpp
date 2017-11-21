@@ -14,8 +14,10 @@ void Adafruit9DOFClass::init()
 	write(LSM303_ACCEL_ADDRESS, LSM303_ACCEL_CTRL_REG1_A, 0x57); // Wake up
 	write(L3GD20_ADDRESS, L3GD20_CTRL_REG1, 0x00);
 	write(L3GD20_ADDRESS, L3GD20_CTRL_REG1, 0x0F);
+	write(LSM303_MAG_ADDRESS, LSM303_MAG_MR_REG_M, 0x00);
 	write(LSM303_ACCEL_ADDRESS, LSM303_ACCEL_CTRL_REG4_A, 0 << 4); // Set accelerometers measuring range from -2g to 2g
 	write(L3GD20_ADDRESS, L3GD20_CTRL_REG4, 3 << 4); // Set gyroscopes measuring range from -2000°/s to 2000°/s 
+	write(LSM303_MAG_ADDRESS, LSM303_MAG_CRB_REG_M, 1 << 5);
 
 	m_attitude = {1, 0, 0, 0};
 	m_last_update = micros();
@@ -97,9 +99,16 @@ void Adafruit9DOFClass::get_raw_values()
 	Wire.write(L3GD20_OUT_X_L | 0x80);
 	Wire.endTransmission(false);
 	Wire.requestFrom(L3GD20_ADDRESS, uint8_t(6), uint8_t(true));
-	m_raw_gyro_x  = Wire.read() | Wire.read() << 8;
-	m_raw_gyro_y  = Wire.read() | Wire.read() << 8;
-	m_raw_gyro_z  = Wire.read() | Wire.read() << 8;
+	m_raw_gyro_x = Wire.read() | Wire.read() << 8;
+	m_raw_gyro_y = Wire.read() | Wire.read() << 8;
+	m_raw_gyro_z = Wire.read() | Wire.read() << 8;
+	Wire.beginTransmission(LSM303_MAG_ADDRESS);
+	Wire.write(LSM303_MAG_OUT_X_H_M);
+	Wire.endTransmission(false);
+	Wire.requestFrom(LSM303_MAG_ADDRESS, uint8_t(6), uint8_t(true));
+	m_raw_mag_x = Wire.read() | Wire.read() << 8;
+	m_raw_mag_y = Wire.read() | Wire.read() << 8;
+	m_raw_mag_z = Wire.read() | Wire.read() << 8;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
