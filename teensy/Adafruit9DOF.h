@@ -10,12 +10,12 @@
 
 const float FILTER_PARAM = 0.97;
 
-const float ACCEL_X_MINUS_G = -16450;
-const float ACCEL_X_PLUS_G  = +15900;
-const float ACCEL_Y_MINUS_G = -16500;
-const float ACCEL_Y_PLUS_G  = +16000;
-const float ACCEL_Z_MINUS_G = -15700;
-const float ACCEL_Z_PLUS_G  = +16000;
+const float ACCEL_X_MIN = -16450;
+const float ACCEL_X_MAX = +15900;
+const float ACCEL_Y_MIN = -16500;
+const float ACCEL_Y_MAX = +16000;
+const float ACCEL_Z_MIN = -15700;
+const float ACCEL_Z_MAX = +16000;
 
 const float GYRO_X_ZERO =  -4;
 const float GYRO_Y_ZERO = -52;
@@ -131,12 +131,12 @@ public:
 	int16_t get_raw_gyro_z()  const {return m_raw_gyro_z;}
 
 	const Quaternion& get_attitude() const {return m_attitude;}
+	const Quaternion get_lin_accel() const {return m_lin_accel;}
+	const Quaternion get_ang_vel()   const {return m_ang_vel;}
 
 	float get_roll()  const {return m_attitude.get_roll();}
 	float get_pitch() const {return m_attitude.get_pitch();}
 	float get_yaw()   const {return m_attitude.get_yaw();}
-
-	inline float get_pitch_approx() const;
 
 private:
 
@@ -145,6 +145,8 @@ private:
 	uint8_t read(uint8_t address, uint8_t reg) const;
 
 	void get_raw_values();
+	void get_accel_vec();
+	void get_gyro_axis();
 
 	int16_t m_raw_accel_x;
 	int16_t m_raw_accel_y;
@@ -156,23 +158,17 @@ private:
 	int16_t m_raw_gyro_y;
 	int16_t m_raw_gyro_z;
 
+	Quaternion m_accel_vec;
+	Quaternion m_gyro_axis;
 	Quaternion m_attitude;
+	Quaternion m_lin_accel;
+	Quaternion m_ang_vel;
 
 	unsigned long m_last_update;
 
 	friend void setup();
 	friend void loop();
 };
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-float Adafruit9DOFClass::get_pitch_approx() const
-{
-	// Return the 1st degree Taylor polynomial of the pitch function at the point pitch = 0
-	// In other words this computes an approximation of the current attitude pitch without using the
-	// asin function
-	return 2 * (m_attitude.w * m_attitude.y - m_attitude.z * m_attitude.x);
-}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 

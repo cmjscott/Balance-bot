@@ -35,32 +35,27 @@ void Adafruit9DOFClass::update()
 	const float dt = (now - m_last_update) / 1e6;
 	m_last_update = now;
 
-	// Compute quaternions
-	const Quaternion accel_axis =
-	{
-		0,
-		((ACCEL_X_PLUS_G + ACCEL_X_MINUS_G) / 2 - m_raw_accel_x) / ((ACCEL_X_PLUS_G - ACCEL_X_MINUS_G) / 2),
-		((ACCEL_Y_PLUS_G + ACCEL_Y_MINUS_G) / 2 - m_raw_accel_y) / ((ACCEL_Y_PLUS_G - ACCEL_Y_MINUS_G) / 2),
-		((ACCEL_Z_PLUS_G + ACCEL_Z_MINUS_G) / 2 - m_raw_accel_z) / ((ACCEL_Z_PLUS_G - ACCEL_Z_MINUS_G) / 2)
-	};
-	const Quaternion half_gyro_axis =
-	{
-		0,
-		(m_raw_gyro_x - GYRO_X_ZERO) * GYRO_SCALE * dt * 0.5 * radians(2000) / 32768,
-		(m_raw_gyro_y - GYRO_Y_ZERO) * GYRO_SCALE * dt * 0.5 * radians(2000) / 32768,
-		(m_raw_gyro_z - GYRO_Z_ZERO) * GYRO_SCALE * dt * 0.5 * radians(2000) / 32768
-	};
+	// Calibrate quaternions
+	get_accel_vec();
+	get_gyro_axis();
 
 	// Compute the estimated attitude using the gyroscopes only
-	const Quaternion gyro_attitude = (m_attitude + m_attitude * half_gyro_axis).normalized();
+	const Quaternion qdot = m_attitude * m_gyro_axis * dt * 0.5;
+	const Quaternion gyro_attitude = (m_attitude + qdot).normalized();
 
 	// Correct the estimated attitude using the accelerometers
-	const Quaternion local_gravity = gyro_attitude.conjugate() * Quaternion({0, 0, 0, -1}) * gyro_attitude;
-	const Quaternion correction = (Quaternion({1, 0, 0, 0}) - accel_axis.normalized() * local_gravity).conjugate().normalized();
+	const Quaternion g_U = Quaternion({0, 0, 0, -1}); // Gravity vector in universal frame
+	const Quaternion g_E = gyro_attitude.conjugate() * g_U * gyro_attitude; // Gravity in embedded frame
+	const Quaternion correction = (Quaternion({1, 0, 0, 0}) - m_accel_vec.normalized() * g_E).conjugate().normalized();
 	const Quaternion accel_attitude = gyro_attitude * correction;
 
 	// Merge estimated attitudes using a complementary filter
-	m_attitude = lerp(accel_attitude, gyro_attitude, FILTER_PARAM);
+	const Quaternion new_attitude = lerp(accel_attitude, gyro_attitude, FILTER_PARAM);
+
+	// Update internal quaternions
+	m_lin_accel = new_attitude * m_accel_vec * new_attitude.conjugate() - g_U; 
+	m_ang_vel = 2 * m_attitude.conjugate() * (new_attitude - m_attitude) / dt;
+	m_attitude = new_attitude;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -88,6 +83,7 @@ uint8_t Adafruit9DOFClass::read(uint8_t address, uint8_t reg) const
 
 void Adafruit9DOFClass::get_raw_values()
 {
+	// Read accelerometers
 	Wire.beginTransmission(LSM303_ACCEL_ADDRESS);
 	Wire.write(LSM303_ACCEL_OUT_X_L_A | 0x80);
 	Wire.endTransmission(false);
@@ -95,6 +91,8 @@ void Adafruit9DOFClass::get_raw_values()
 	m_raw_accel_x = Wire.read() | Wire.read() << 8;
 	m_raw_accel_y = Wire.read() | Wire.read() << 8;
 	m_raw_accel_z = Wire.read() | Wire.read() << 8;
+	
+	// Read gyrometers
 	Wire.beginTransmission(L3GD20_ADDRESS);
 	Wire.write(L3GD20_OUT_X_L | 0x80);
 	Wire.endTransmission(false);
@@ -102,6 +100,8 @@ void Adafruit9DOFClass::get_raw_values()
 	m_raw_gyro_x = Wire.read() | Wire.read() << 8;
 	m_raw_gyro_y = Wire.read() | Wire.read() << 8;
 	m_raw_gyro_z = Wire.read() | Wire.read() << 8;
+
+	// Read magnetometers
 	Wire.beginTransmission(LSM303_MAG_ADDRESS);
 	Wire.write(LSM303_MAG_OUT_X_H_M);
 	Wire.endTransmission(false);
@@ -109,6 +109,32 @@ void Adafruit9DOFClass::get_raw_values()
 	m_raw_mag_x = Wire.read() | Wire.read() << 8;
 	m_raw_mag_y = Wire.read() | Wire.read() << 8;
 	m_raw_mag_z = Wire.read() | Wire.read() << 8;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void Adafruit9DOFClass::get_accel_vec()
+{
+	m_accel_vec =
+	{
+		0,
+		((ACCEL_X_MAX + ACCEL_X_MIN) / 2 - m_raw_accel_x) / ((ACCEL_X_MAX - ACCEL_X_MIN) / 2),
+		((ACCEL_Y_MAX + ACCEL_Y_MIN) / 2 - m_raw_accel_y) / ((ACCEL_Y_MAX - ACCEL_Y_MIN) / 2),
+		((ACCEL_Z_MAX + ACCEL_Z_MIN) / 2 - m_raw_accel_z) / ((ACCEL_Z_MAX - ACCEL_Z_MIN) / 2)
+	};
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void Adafruit9DOFClass::get_gyro_axis()
+{
+	m_gyro_axis =
+	{
+		0,
+		(m_raw_gyro_x - GYRO_X_ZERO) * GYRO_SCALE * radians(2000) / 32768,
+		(m_raw_gyro_y - GYRO_Y_ZERO) * GYRO_SCALE * radians(2000) / 32768,
+		(m_raw_gyro_z - GYRO_Z_ZERO) * GYRO_SCALE * radians(2000) / 32768
+	};
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
