@@ -8,7 +8,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-const float FILTER_PARAM = 0.97;
+const float FILTER_PARAM = 0.98;
 
 const float ACCEL_X_MIN = -16450;
 const float ACCEL_X_MAX = +15900;
