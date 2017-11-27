@@ -50,8 +50,8 @@ void RobotController::get_pose(float& x, float& z, float& theta, float &phi)
 {
 	x = m_x;
 	z = m_z;
-	theta = m_theta;
-	phi = m_phi;
+	theta = degrees(m_theta);
+	phi = degrees(m_phi);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -60,10 +60,17 @@ void RobotController::set_pose(float x, float z, float theta, float phi)
 {
 	m_x = x;
 	m_z = z;
-	m_theta = theta;
-	m_phi = phi;
+	m_theta = radians(theta);
+	m_phi = radians(phi);
 	inverse_kinematics();
 	m_ssc->commit();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void RobotController::home()
+{
+	set_pose(0, m_L1 / 2, 0, 0);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -78,10 +85,10 @@ void RobotController::goto_pose(float x, float z, float theta, float phi, unsign
 	for (unsigned long ti = t0; ti - t0 < time; ti += 20)
 	{
 		float t = float(ti - t0) / time;
-		m_x = t * x + (t - 1) * x0;
-		m_z = t * z + (t - 1) * z0;
-		m_theta = t * theta + (t - 1) * theta0;
-		m_phi = t * phi + (t - 1) * phi0;
+		m_x     = (1 - t) * x0     + t * x;
+		m_z     = (1 - t) * z0     + t * z;
+		m_theta = (1 - t) * theta0 + t * radians(theta);
+		m_phi   = (1 - t) * phi0   + t * radians(phi);
 		inverse_kinematics();
 		m_ssc->commit();
 		delay(ti + 20 - millis());
@@ -114,8 +121,6 @@ void RobotController::forward_kinematics()
 	const float zBD = zB - zD;
 
 	const float d = sqrt(sq(xBD) + sq(zBD));
-
-
 	const float a = (sq(m_L3) - sq(m_L2) + sq(d)) / (2 * d);
 	const float h = sqrt(sq(m_L3) - sq(a));
 

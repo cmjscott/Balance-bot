@@ -42,6 +42,8 @@ public:
 
 	void set_pose(float x, float z, float theta, float phi);
 
+	void home();
+
 	void goto_pose(float x, float z, float theta, float phi, unsigned long time);
 
 private:
