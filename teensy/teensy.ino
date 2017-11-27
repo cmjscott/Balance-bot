@@ -15,22 +15,24 @@ void setup()
 	Serial.begin(115200);
 	Serial1.begin(115200);
 	ssc.begin(Serial1);
-	ssc[0].config( 820, 1890,  90, 45);
-	ssc[1].config( 820, 1890,  90, 45);
-	ssc[2].config(1140, 2500,  90,  0);
-	ssc[3].config(1130, 2130, -45, 45);
-	robot.begin(ssc, 0, 1, 2, 3);
-	robot.config(600, 140, 100, 289, 0); // millimeters
+	robot.begin(ssc, 0, 1, 2, 4);
+	ssc[0].config( 820, 1440,  90, 45);
+	ssc[1].config( 860, 1470,  90, 45);
+	ssc[2].config(1340, 2450,  90,  4);
+	ssc[4].config(1400, 1850, -22, 22);
+	robot.config(600, 140, 100, 337, 0); // millimeters
+	robot.home();
 }
 
 void loop()
 {
 /*	robot.set_pose(X + R * cos(2 * M_PI * t), Y + R * sin(2 * M_PI * t), 0, 0);
 	delay(20);
-	t += 0.01;*/
-	robot.set_pose(0, 50, 0, 0);
-	Serial.print(ssc[0].get_degrees()); Serial.print('\t');
-	Serial.print(ssc[1].get_degrees()); Serial.print('\t');
-	Serial.print(ssc[2].get_degrees()); Serial.print('\n');
-	delay(500);
+	t += 0.01; //*/
+/*	robot.goto_pose(0, 50,  5, 0, 200);
+	robot.goto_pose(0, 50, -5, 0, 200); //*/
+	robot.goto_pose(-30, 20, 0, 0, 200); delay(100);
+	robot.goto_pose( 30, 20, 0, 0, 200); delay(100);
+	robot.goto_pose( 30, 80, 0, 0, 200); delay(100);
+	robot.goto_pose(-30, 80, 0, 0, 200); delay(100); //*/
 }
