@@ -2,14 +2,21 @@
 #include "SSC32.h"
 #include "RobotController.h"
 #include "TouchScreen.h"
+#include "Ycontroller.h"
 
 SSC32 ssc;
 RobotController robot;
 TouchScreen screen;
+Ycontroller yController;
 
 float xPos = 0;
 float yPos = 0;
 long long t;
+long long tPrev = 0;
+int dt;
+
+double u3 = 0;
+double u3_next = 0;
 
 const float X = 0;
 const float Y = 100;
@@ -19,30 +26,51 @@ const float R = 40; // millimeters
 void setup()
 {
 	Serial.begin(115200);
-	screen.config(3900, 130, 176.53, 3900, 252, 135.382);
-	screen.begin();
-	/*
 	Serial1.begin(115200);
+
+	screen.config(3900, 130, 0.17653, 3900, 252, 0.135382);
+	screen.begin();
+
+	yController.begin();
+
 	ssc.begin(Serial1);
-	robot.begin(ssc, 0, 1, 2, 4);
+	//robot.begin(ssc, 0, 1, 2, 4);
 	ssc[0].config( 820, 1440,  90, 45);
 	ssc[1].config( 860, 1470,  90, 45);
 	ssc[2].config(1340, 2450,  90,  4);
 	ssc[4].config(1400, 1850, -22, 22);
-	robot.config(600, 140, 100, 337, 0); // millimeters
-	robot.home();
-	*/
-	Serial.println("Adafruit STMPE610 example");
-  Serial.flush();
+	//robot.config(600, 140, 100, 337, 0); // millimeters
+	//robot.home();
 }
 
 void loop()
 {
-	t = millis();
+	delay(10);
+	//t = millis();
+
 	screen.getPos(xPos, yPos);
+<<<<<<< Updated upstream
 	Serial.print(xPos); Serial.print(" ");
   Serial.print(yPos); Serial.print(" ");
-	Serial.println((long)t);
+	//Serial.print((long)t);
+	Serial.println("");
+=======
+	yController.step(u3, yPos, u3_next);
+	u3 = u3_next;
+
+	ssc[4].set_radians(u3);
+	ssc.commit();
+
+	//Serial.print(yPos); Serial.print(" ");
+	//Serial.print(u3); Serial.print(" ");
+	//Serial.println((long)t);
+
+	// x,z,theta,phi,time
+
+	//robot.goto_pose(0, 50,  5, 0, 200)
+
+
+>>>>>>> Stashed changes
 
 /*	robot.set_pose(X + R * cos(2 * M_PI * t), Y + R * sin(2 * M_PI * t), 0, 0);
 	delay(20);
