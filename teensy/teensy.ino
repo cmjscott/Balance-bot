@@ -49,12 +49,6 @@ void loop()
 	//t = millis();
 
 	screen.getPos(xPos, yPos);
-<<<<<<< Updated upstream
-	Serial.print(xPos); Serial.print(" ");
-  Serial.print(yPos); Serial.print(" ");
-	//Serial.print((long)t);
-	Serial.println("");
-=======
 	yController.step(u3, yPos, u3_next);
 	u3 = u3_next;
 
@@ -70,7 +64,6 @@ void loop()
 	//robot.goto_pose(0, 50,  5, 0, 200)
 
 
->>>>>>> Stashed changes
 
 /*	robot.set_pose(X + R * cos(2 * M_PI * t), Y + R * sin(2 * M_PI * t), 0, 0);
 	delay(20);
