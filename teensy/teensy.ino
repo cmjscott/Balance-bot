@@ -28,37 +28,40 @@ void setup()
 	Serial.begin(115200);
 	Serial1.begin(115200);
 
-	screen.config(3900, 130, 0.17653, 3900, 252, 0.135382);
+	//screen.config(3900, 130, 0.17653, 3900, 252, 0.135382); // meters
+	screen.config(3900, 130, 176.53, 3900, 252, 135.382); // milimeters
 	screen.begin();
 
 	yController.begin();
 
 	ssc.begin(Serial1);
-	//robot.begin(ssc, 0, 1, 2, 4);
+	robot.begin(ssc, 0, 1, 2, 4);
 	ssc[0].config( 820, 1440,  90, 45);
 	ssc[1].config( 860, 1470,  90, 45);
 	ssc[2].config(1340, 2450,  90,  4);
 	ssc[4].config(1400, 1850, -22, 22);
-	//robot.config(600, 140, 100, 337, 0); // millimeters
-	//robot.home();
+	robot.config(600, 140, 100, 337, 0); // millimeters
+	delay(2000);
+	robot.home();
 }
 
 void loop()
 {
 	delay(10);
-	//t = millis();
+
+	t = millis();
 
 	screen.getPos(xPos, yPos);
 	yController.step(u3, yPos, u3_next);
 	u3 = u3_next;
 
-	ssc[4].set_radians(u3);
+	ssc[4].set_degrees(u3);
 	ssc.commit();
 
-	//Serial.print(yPos); Serial.print(" ");
-	//Serial.print(u3); Serial.print(" ");
-	//Serial.println((long)t);
-
+	Serial.print(yPos); Serial.print(" ");
+	Serial.print(u3); Serial.print(" ");
+	Serial.print((long)t);
+	Serial.println("");
 	// x,z,theta,phi,time
 
 	//robot.goto_pose(0, 50,  5, 0, 200)

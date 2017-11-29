@@ -46,8 +46,8 @@ void TouchScreen::getPos(float &x, float &y)
 	}
 	else
 	{
-		x = 0;
-		y = 0;
+		//x = 0;
+		//y = 0;
 	}
 }
 

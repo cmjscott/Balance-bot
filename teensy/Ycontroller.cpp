@@ -34,18 +34,19 @@ void Ycontroller::step(double &u3_current, float &y, double &u3_next)
 	m_theta = m_theta + m_thetaNext * dt;
 	m_yDot = m_yDot + m_yDotNext * dt;
 
-	u3_next = u3_current + (0.0510 * m_y + 6.100 * m_theta + 0.5708 * m_yDot) * dt;
+	//u3_next = u3_current + (0.0510 * m_y + 6.100 * m_theta + 0.5708 * m_yDot) * dt;
 
+	u3_next = 150 * y;
 	tPrev = t;
 
-	Serial.print(m_yNext); Serial.print(" ");
-	Serial.print(m_thetaNext); Serial.print(" ");
-	Serial.print(m_yDotNext); Serial.print(" ");
-	Serial.print(m_y); Serial.print(" ");
-	Serial.print(m_theta); Serial.print(" ");
-	Serial.print(m_yDot); Serial.print(" ");
+	//Serial.print(m_yNext); Serial.print(" ");
+	//Serial.print(m_thetaNext); Serial.print(" ");
+	//Serial.print(m_yDotNext); Serial.print(" ");
+//	Serial.print(m_y); Serial.print(" ");
+	//Serial.print(m_theta); Serial.print(" ");
+	//Serial.print(m_yDot); Serial.print(" ");
 
-	Serial.println(dt);
+	//Serial.println(dt);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
