@@ -1,5 +1,10 @@
 #include "TouchScreen.h"
 
+/* TODO: Impliment some way of handeling when the screen momentarily loses track of the ball.
+It seems to happen more often than I would like.
+*/
+
+
 /*
 #define X_MAX 3900
 #define X_MIN 130

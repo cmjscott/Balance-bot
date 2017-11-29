@@ -42,7 +42,8 @@ void loop()
 	screen.getPos(xPos, yPos);
 	Serial.print(xPos); Serial.print(" ");
   Serial.print(yPos); Serial.print(" ");
-	Serial.println((long)t);
+	//Serial.print((long)t);
+	Serial.println("");
 
 /*	robot.set_pose(X + R * cos(2 * M_PI * t), Y + R * sin(2 * M_PI * t), 0, 0);
 	delay(20);
