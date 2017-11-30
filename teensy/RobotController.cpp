@@ -115,14 +115,10 @@ void RobotController::forward_kinematics()
 
 	const float d = sqrt(sq(xBD) + sq(zBD));
 
-	/*
-	if this calculates cos(CDB), shouldn't it be divided by (2 * d * L3)?
-	c^2 = a^2 + b^2 - 2*a*b*cos(C)  -> looks to be missing the "b" term?
-	*/
+
 	const float a = (sq(m_L3) - sq(m_L2) + sq(d)) / (2 * d);
-
-
 	const float h = sqrt(sq(m_L3) - sq(a));
+
 	const float xC = xD + (a * xBD - h * zBD) / d;
 	const float zC = zD + (h * xBD + h * zBD) / d;
 
