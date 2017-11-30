@@ -3,7 +3,9 @@
 #include "RobotController.h"
 #include "TouchScreen.h"
 #include "Ycontroller.h"
+#include "PID.h"
 
+PID ctrly, ctrlx;
 SSC32 ssc;
 RobotController robot;
 TouchScreen screen;
@@ -16,6 +18,7 @@ long long tPrev = 0;
 int dt;
 
 double u3 = 0;
+double u2 = 0;
 double u3_next = 0;
 
 const float X = 0;
@@ -32,7 +35,16 @@ void setup()
 	screen.config(3900, 130, 176.53, 3900, 252, 135.382); // milimeters
 	screen.begin();
 
+	yController.enable();
+	yController.setTimestep(0.01);
+	yController.config(screen);
 	yController.begin();
+
+	ctrly.setOutputLimits(-70.0, 70.0);
+	ctrlx.setOutputLimits(-70.0,70.0);
+
+	ctrly.setTunings(-0.04, .001, 0.03);
+	ctrlx.setTunings(-0.05, 0, 0.03);
 
 	ssc.begin(Serial1);
 	robot.begin(ssc, 0, 1, 2, 4);
@@ -47,21 +59,35 @@ void setup()
 
 void loop()
 {
-	delay(10);
-
+	delay(20);
 	t = millis();
 
 	screen.getPos(xPos, yPos);
-	yController.step(u3, yPos, u3_next);
-	u3 = u3_next;
+	//yController.step(u3, yPos, u3_next);
+	//u3 = u3_next;
 
-	ssc[4].set_degrees(u3);
-	ssc.commit();
 
-	Serial.print(yPos); Serial.print(" ");
-	Serial.print(u3); Serial.print(" ");
-	Serial.print((long)t);
+	//yController.update();
+	//u3 = yController.getCurrentControl();
+
+	//ssc[4].set_degrees(u3);
+	//ssc.commit();
+
+	u2 = ctrlx.compute(0, xPos, 0.02);
+	Serial.print(" \t | \t ");
+	u3 = ctrly.compute(0, yPos, 0.02);
+
+	robot.goto_pose(0, 50,  u2, u3, 50);
+
+	//ssc[4].set_degrees(u3);
+	//ssc.commit();
+
+	//Serial.print(" -- ");
+	//Serial.print(yPos); Serial.print(" ");
+	//Serial.print(u3); Serial.print(" ");
+	//Serial.print((long)t);
 	Serial.println("");
+
 	// x,z,theta,phi,time
 
 	//robot.goto_pose(0, 50,  5, 0, 200)

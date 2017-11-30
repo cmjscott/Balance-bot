@@ -1,26 +1,61 @@
 #include "Ycontroller.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void Ycontroller::config()
+void Ycontroller::config(TouchScreen& _screen)
 {
-
+	screen = &_screen;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void Ycontroller::begin()
 {
-	m_y = 0;
-	m_yDot = 0;
-	m_theta = 0;
-	m_yNext = 0;
-	m_thetaNext = 0;
-	m_yDotNext = 0;
-	tPrev = 0;
+	ku 		= 0.7723;
+	kum1	= -2.969;
+	kum2 	= 7.594;
+	kum3	= -3.406;
+	kum4 	= -0.4491;
+
+	ke 		= 1;
+	kem1 	= -2.414;
+	kem2 	= 1.903;
+	kem3 	= -0.489;
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+void Ycontroller::reset()
+{
+
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void Ycontroller::process(float timestep)
+{
+	screen->getPos(xPos, yPos);
+
+	ek 	= yPos - target;
+
+	uk 	= ke 		* ek 		+ kem1 * ekm1 	+ kem2 * ekm2 	+ kem3 * ekm3;
+	uk += kum1 	* ukm1 	+ kum2 * ukm2 	+ kum3 * ukm3 	+ kum4 * ukm4;
+	uk 	= (uk / ku);
+
+	u  += uk * timestep;
+
+	ekm3 = ekm2;
+	ekm2 = ekm1;
+	ekm1 = ek;
+
+	ukm4 = ukm3;
+	ukm3 = ukm2;
+	ukm2 = ukm1;
+	ukm1 = uk;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/*
 void Ycontroller::step(double &u3_current, float &y, double &u3_next)
 {
 	t = millis();
@@ -48,5 +83,5 @@ void Ycontroller::step(double &u3_current, float &y, double &u3_next)
 
 	//Serial.println(dt);
 }
-
+*/
 ////////////////////////////////////////////////////////////////////////////////////////////////////
