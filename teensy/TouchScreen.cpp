@@ -11,7 +11,7 @@
 */
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void TouchScreen::config(int xMax, int xMin, float xLength, int yMax, int yMin, float yLength)
+void TouchScreen::config(int xMax, int xMin, float xLength, int yMax, int yMin, float yLength, int N)
 {
 	m_xMax 		= xMax;
 	m_xMin 		= xMin;
@@ -19,6 +19,7 @@ void TouchScreen::config(int xMax, int xMin, float xLength, int yMax, int yMin, 
 	m_yMax 		= yMax;
 	m_yMin		= yMin;
 	m_yLength = yLength;
+	m_N 			= N;
 
 	touch = Adafruit_STMPE610();
 }
@@ -60,3 +61,27 @@ void TouchScreen::touchToPos()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void process(float timestep)
+{
+	getPos(m_currentX, m_currentY);
+	deriv(timestep);
+
+	m_prevX = m_currentX;
+	m_prevY = m_currentY;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void deriv(float dt)
+{
+	float dx = (m_currentX - m_prevX) / dt;
+	float dy = (m_currentY - m_prevY) / dt;
+
+	// calculates the rolling average over the last N samples for dx and dy
+	m_avgDX -= m_avgDX / m_N;
+	m_avgDX += dx / m_N;
+
+	m_avgDY -= m_avgDY / m_N;
+	m_avgDY += dy / m_N;
+}

@@ -33,11 +33,13 @@ void setup()
 
 	//screen.config(3900, 130, 0.17653, 3900, 252, 0.135382); // meters
 	screen.config(3900, 130, 176.53, 3900, 252, 135.382); // milimeters
+	screen.enable();
+	screen.setTimestep(0.001);
 	screen.begin();
 
+	yController.config(screen);
 	yController.enable();
 	yController.setTimestep(0.01);
-	yController.config(screen);
 	yController.begin();
 
 	ctrly.setOutputLimits(-70.0, 70.0);
