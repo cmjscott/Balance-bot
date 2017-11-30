@@ -23,16 +23,38 @@ float PID::compute(float setpoint, float input, float timestep)
 	// Compute the PID controller's output
 	float output = m_Kp * currentError + m_Ki * m_errorIntegral - m_Kd * errorDerivative;
 
-	Serial.print(currentError); Serial.print("\t");
-	Serial.print(m_errorIntegral); Serial.print("\t");
-	Serial.print(errorDerivative); Serial.print("\t");
-	Serial.print(output); Serial.print(" ");
+	//Serial.print(currentError); Serial.print("\t");
+	//Serial.print(m_errorIntegral); Serial.print("\t");
+	//Serial.print(errorDerivative); Serial.print("\t");
+	//Serial.print(output); Serial.print(" ");
 	//Serial.println("");
 
 	//return output;
 	return saturate(output, m_minOutput, m_maxOutput);
+}
 
+float PID::compute2(float setpoint, float input, float timestep, float deriv)
+{
+	// Compute the error between the current state and the setpoint
+	float currentError = setpoint - input;
 
+	// Compute the error integral
+	m_errorIntegral += currentError * timestep;
+	m_errorIntegral = saturate(m_errorIntegral, m_minOutput / m_Ki, m_maxOutput / m_Ki);
+
+	m_previousError = currentError;
+
+	// Compute the PID controller's output
+	float output = m_Kp * currentError + m_Ki * m_errorIntegral - m_Kd * deriv;
+
+	//Serial.print(currentError); Serial.print("\t");
+	//Serial.print(m_errorIntegral); Serial.print("\t");
+	//Serial.print(deriv); Serial.print("\t");
+	//Serial.print(output); Serial.print(" ");
+	//Serial.println("");
+
+	//return output;
+	return saturate(output, m_minOutput, m_maxOutput);
 }
 
 void PID::reset()

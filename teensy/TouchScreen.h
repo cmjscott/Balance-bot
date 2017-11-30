@@ -14,7 +14,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-class TouchScreen
+class TouchScreen : public PeriodicProcess
 {
 public:
 	void config(int xMax, int xMin, float xLength, int yMax, int yMin, float yLength, int N);

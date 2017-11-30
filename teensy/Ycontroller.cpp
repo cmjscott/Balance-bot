@@ -1,9 +1,11 @@
 #include "Ycontroller.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void Ycontroller::config(TouchScreen& _screen)
+void Ycontroller::config(TouchScreen& _screen, PID& _PIDx, PID& _PIDy)
 {
-	screen = &_screen;
+	screen 	= &_screen;
+	ctrlx		= &_PIDx;
+	ctrly		= &_PIDy;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -34,6 +36,9 @@ void Ycontroller::reset()
 
 void Ycontroller::process(float timestep)
 {
+	ux = ctrlx->compute2(0,screen->getX(),timestep,screen->getDX());
+	uy = ctrly->compute2(0,screen->getY(),timestep,screen->getDY());
+	/*
 	screen->getPos(xPos, yPos);
 
 	ek 	= yPos - target;
@@ -52,6 +57,7 @@ void Ycontroller::process(float timestep)
 	ukm3 = ukm2;
 	ukm2 = ukm1;
 	ukm1 = uk;
+	*/
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

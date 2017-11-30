@@ -11,6 +11,7 @@ public:
 	PID() : m_Kp(1), m_Ki(0), m_Kd(0), m_minOutput(-INFINITY), m_maxOutput(INFINITY){}
 
 	float compute(float setpoint, float input, float timestep);
+	float compute2(float setpoint, float input, float timestep, float deriv);
 
 	void reset();
 

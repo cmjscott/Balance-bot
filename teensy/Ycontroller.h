@@ -5,25 +5,28 @@
 
 #include "PeriodicProcess.h"
 #include "TouchScreen.h"
+#include "PID.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class Ycontroller : public PeriodicProcess
 {
 public:
-	void config(TouchScreen& _screen);
+	void config(TouchScreen& _screen, PID& _PIDx, PID& _PIDy);
 	void begin();
 	void reset();
 	void setTarget(double _target) {target = _target;}
 	//void step(double &u3_current, float &y, double &u3_next);
 
-	double getCurrentControl() const {return u;}
+	double getUx() const {return ux;}
+	double getUy() const {return uy;}
+
 
 protected:
 	virtual void process(float timestep);
 
-	double u;
-	
+	float ux, uy;
+
 	double uk, ukm1, ukm2, ukm3, ukm4;
 	double ek, ekm1, ekm2, ekm3;
 
@@ -31,6 +34,7 @@ protected:
 	double ke, kem1, kem2, kem3;
 
 	TouchScreen *screen;
+	PID *ctrlx, *ctrly;
 
 	double target;
 

@@ -11,8 +11,7 @@ RobotController robot;
 TouchScreen screen;
 Ycontroller yController;
 
-float xPos = 0;
-float yPos = 0;
+float xPos, yPos, dxPos, dyPos;
 long long t;
 long long tPrev = 0;
 int dt;
@@ -32,21 +31,24 @@ void setup()
 	Serial1.begin(115200);
 
 	//screen.config(3900, 130, 0.17653, 3900, 252, 0.135382); // meters
-	screen.config(3900, 130, 176.53, 3900, 252, 135.382); // milimeters
+	screen.config(3900, 130, 176.53, 3900, 252, 135.382, 10); // milimeters
 	screen.enable();
-	screen.setTimestep(0.001);
+	screen.setTimestep(0.005);
 	screen.begin();
-
-	yController.config(screen);
-	yController.enable();
-	yController.setTimestep(0.01);
-	yController.begin();
 
 	ctrly.setOutputLimits(-70.0, 70.0);
 	ctrlx.setOutputLimits(-70.0,70.0);
 
-	ctrly.setTunings(-0.04, .001, 0.03);
-	ctrlx.setTunings(-0.05, 0, 0.03);
+	//ctrly.setTunings(-0.04, .001, 0.03);
+	//ctrlx.setTunings(-0.05, 0, 0.03);
+
+	ctrly.setTunings(-0.05, 0, 0.003);
+	ctrlx.setTunings(-0.05, 0, 0.003);
+
+	yController.config(screen, ctrlx, ctrly);
+	yController.enable();
+	yController.setTimestep(0.01);
+	yController.begin();
 
 	ssc.begin(Serial1);
 	robot.begin(ssc, 0, 1, 2, 4);
@@ -61,13 +63,26 @@ void setup()
 
 void loop()
 {
-	delay(20);
+	//delay(50);
 	t = millis();
 
-	screen.getPos(xPos, yPos);
+	screen.update();
+	//yController.update();
 	//yController.step(u3, yPos, u3_next);
 	//u3 = u3_next;
 
+	/*
+	xPos = screen.getX();
+	yPos = screen.getY();
+	dxPos = screen.getDX();
+	dyPos = screen.getDY();
+
+	Serial.print(xPos); Serial.print(" ");
+	Serial.print(yPos); Serial.print(" ");
+	Serial.print(dxPos); Serial.print(" ");
+	Serial.print(dyPos); Serial.print(" ");
+	Serial.print((long)t);
+	*/
 
 	//yController.update();
 	//u3 = yController.getCurrentControl();
@@ -75,14 +90,16 @@ void loop()
 	//ssc[4].set_degrees(u3);
 	//ssc.commit();
 
-	u2 = ctrlx.compute(0, xPos, 0.02);
-	Serial.print(" \t | \t ");
-	u3 = ctrly.compute(0, yPos, 0.02);
+	//u2 = ctrlx.compute(0, xPos, 0.02);
+	//Serial.print(" \t | \t ");
+	//u3 = ctrly.compute(0, yPos, 0.02);
 
-	robot.goto_pose(0, 50,  u2, u3, 50);
+	//Serial.print(yController.getUy());
+	//robot.goto_pose(0, 50,  0, yController.getUy(), 50);
+	//robot.set_pose(0,50,yController.getUx(), yController.getUy());
 
-	//ssc[4].set_degrees(u3);
-	//ssc.commit();
+	//ssc[4].set_degrees(yController.getUy());
+	//ssc.commit(20);
 
 	//Serial.print(" -- ");
 	//Serial.print(yPos); Serial.print(" ");

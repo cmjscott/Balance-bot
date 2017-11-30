@@ -62,18 +62,24 @@ void TouchScreen::touchToPos()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void process(float timestep)
+void TouchScreen::process(float timestep)
 {
 	getPos(m_currentX, m_currentY);
 	deriv(timestep);
 
 	m_prevX = m_currentX;
 	m_prevY = m_currentY;
+
+	Serial.print(m_currentX); Serial.print(" ");
+	Serial.print(m_currentY); Serial.print(" ");
+	Serial.print(m_avgDX); Serial.print(" ");
+	Serial.print(m_avgDY); Serial.print(" ");
+	Serial.println(millis());
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void deriv(float dt)
+void TouchScreen::deriv(float dt)
 {
 	float dx = (m_currentX - m_prevX) / dt;
 	float dy = (m_currentY - m_prevY) / dt;
