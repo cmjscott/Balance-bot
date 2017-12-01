@@ -42,8 +42,8 @@ void setup()
 	//ctrly.setTunings(-0.04, .001, 0.03);
 	//ctrlx.setTunings(-0.05, 0, 0.03);
 
-	ctrly.setTunings(-0.05, 0, 0.003);
-	ctrlx.setTunings(-0.05, 0, 0.003);
+	ctrly.setTunings(0.05, .001, 0.03);
+	ctrlx.setTunings(0.05, .001, 0.03);
 
 	yController.config(screen, ctrlx, ctrly);
 	yController.enable();
@@ -67,7 +67,7 @@ void loop()
 	t = millis();
 
 	screen.update();
-	//yController.update();
+	yController.update();
 	//yController.step(u3, yPos, u3_next);
 	//u3 = u3_next;
 
@@ -96,7 +96,7 @@ void loop()
 
 	//Serial.print(yController.getUy());
 	//robot.goto_pose(0, 50,  0, yController.getUy(), 50);
-	//robot.set_pose(0,50,yController.getUx(), yController.getUy());
+	robot.set_pose(0,50,-yController.getUx(), -yController.getUy());
 
 	//ssc[4].set_degrees(yController.getUy());
 	//ssc.commit(20);
@@ -105,7 +105,7 @@ void loop()
 	//Serial.print(yPos); Serial.print(" ");
 	//Serial.print(u3); Serial.print(" ");
 	//Serial.print((long)t);
-	Serial.println("");
+	//Serial.println("");
 
 	// x,z,theta,phi,time
 

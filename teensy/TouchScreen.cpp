@@ -9,6 +9,45 @@
 #define Y_MIN 252
 #define Y_LENGTH 135.382 // milimeters, 5.33 inches
 */
+
+const float TouchScreen::SGFILTER_COEFF0[] =
+{
+	-78.0 / 1105,
+	-13.0 / 1105,
+   42.0 / 1105,
+	 87.0 / 1105,
+	122.0 / 1105,
+	147.0 / 1105,
+	162.0 / 1105,
+	167.0 / 1105,
+	162.0 / 1105,
+	147.0 / 1105,
+	122.0 / 1105,
+	 87.0 / 1105,
+   42.0 / 1105,
+	-13.0 / 1105,
+	-78.0 / 1105,
+};
+
+const float TouchScreen::SGFILTER_COEFF1[] =
+{
+	-7.0 / 280,
+	-6.0 / 280,
+	-5.0 / 280,
+	-4.0 / 280,
+	-3.0 / 280,
+	-2.0 / 280,
+	-1.0 / 280,
+	 0.0 / 280,
+	 1.0 / 280,
+	 2.0 / 280,
+	 3.0 / 280,
+	 4.0 / 280,
+	 5.0 / 280,
+	 6.0 / 280,
+	 7.0 / 280,
+};
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void TouchScreen::config(int xMax, int xMin, float xLength, int yMax, int yMin, float yLength, int N)
@@ -64,30 +103,29 @@ void TouchScreen::touchToPos()
 
 void TouchScreen::process(float timestep)
 {
-	getPos(m_currentX, m_currentY);
-	deriv(timestep);
+	for (int i = 0; i < SGFILTER_NP - 1; i++)
+	{
+		m_xSamples[i] = m_xSamples[i+1];
+		m_ySamples[i] = m_ySamples[i+1];
+	}
+	getPos(m_xSamples[SGFILTER_NP - 1], m_ySamples[SGFILTER_NP - 1]);
 
-	m_prevX = m_currentX;
-	m_prevY = m_currentY;
-
-	Serial.print(m_currentX); Serial.print(" ");
-	Serial.print(m_currentY); Serial.print(" ");
-	Serial.print(m_avgDX); Serial.print(" ");
-	Serial.print(m_avgDY); Serial.print(" ");
-	Serial.println(millis());
+	/*
+	Serial.print(getX()); Serial.print(" ");
+	Serial.print(getY()); Serial.print(" ");
+	Serial.print(getDX()); Serial.print(" ");
+	Serial.print(getDY()); Serial.print(" ");
+	Serial.println(millis()); //*/
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void TouchScreen::deriv(float dt)
+float TouchScreen::applySGFilter(const float samples[], const float coeffs[])
 {
-	float dx = (m_currentX - m_prevX) / dt;
-	float dy = (m_currentY - m_prevY) / dt;
-
-	// calculates the rolling average over the last N samples for dx and dy
-	m_avgDX -= m_avgDX / m_N;
-	m_avgDX += dx / m_N;
-
-	m_avgDY -= m_avgDY / m_N;
-	m_avgDY += dy / m_N;
+	float output = 0;
+	for (int i = 0; i < SGFILTER_NP; i++)
+		output += samples[i] * coeffs[i];
+	return output;
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////

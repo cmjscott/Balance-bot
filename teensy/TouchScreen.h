@@ -7,10 +7,7 @@
 #include "Adafruit_STMPE610.h"
 #include "PeriodicProcess.h"
 
-
-
-
-
+#define SGFILTER_NP 15
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -21,10 +18,10 @@ public:
 	void begin();
 	void getPos(float &x, float &y);
 
-	float getX(){return m_currentX;}
-	float getY(){return m_currentY;}
-	float getDX(){return m_avgDX;}
-	float getDY(){return m_avgDY;}
+	float getX(){return applySGFilter(m_xSamples, SGFILTER_COEFF0);}
+	float getY(){return applySGFilter(m_ySamples, SGFILTER_COEFF0);}
+	float getDX(){return applySGFilter(m_xSamples, SGFILTER_COEFF1) / getTimestep();}
+	float getDY(){return applySGFilter(m_ySamples, SGFILTER_COEFF1) / getTimestep();}
 
 
 
@@ -39,7 +36,8 @@ protected:
 	uint16_t m_xMeasure, m_yMeasure;
 	uint8_t m_zMeasure;
 
-	float m_currentX, m_currentY, m_prevX, m_prevY, m_avgDX, m_avgDY;
+	float m_xSamples[SGFILTER_NP];
+	float m_ySamples[SGFILTER_NP];
 
 	int m_xMax, m_xMin, m_yMax, m_yMin, m_N;
 	float m_xLength, m_yLength, m_xPos, m_yPos;
@@ -47,6 +45,11 @@ protected:
 	bool m_resetFlag = false;
 
 	Adafruit_STMPE610 touch;
+
+	static float applySGFilter(const float samples[], const float coeffs[]);
+
+	static const float SGFILTER_COEFF0[SGFILTER_NP];
+	static const float SGFILTER_COEFF1[SGFILTER_NP];
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

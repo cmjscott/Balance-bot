@@ -36,7 +36,7 @@ void Ycontroller::reset()
 
 void Ycontroller::process(float timestep)
 {
-	ux = ctrlx->compute2(0,screen->getX(),timestep,screen->getDX());
+	ux = ctrlx->compute2(-10,screen->getX(),timestep,screen->getDX());
 	uy = ctrly->compute2(0,screen->getY(),timestep,screen->getDY());
 	/*
 	screen->getPos(xPos, yPos);
