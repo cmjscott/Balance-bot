@@ -70,7 +70,9 @@ void RobotController::set_pose(float x, float z, float theta, float phi)
 
 void RobotController::home()
 {
-	set_pose(0, m_L1 / 2, 0, 0);
+	set_pose(0, m_L1 / 2, 10, 10);
+	delay(2000);
+	set_pose(0, m_L1 / 2, 1.25, 0);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

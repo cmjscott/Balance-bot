@@ -12,47 +12,32 @@
 class Ycontroller : public PeriodicProcess
 {
 public:
-	void config(TouchScreen& _screen, PID& _PIDx, PID& _PIDy);
+	void config(TouchScreen& _screen, PID& _PIDx, PID& _PIDy, PID& _outerPIDx, PID& _outerPIDy);
 	void begin();
 	void reset();
-	void setTarget(double _target) {target = _target;}
-	//void step(double &u3_current, float &y, double &u3_next);
 
 	double getUx() const {return ux;}
 	double getUy() const {return uy;}
+
+	void setXDesired(float xd) {xDesired = xd;}
+	void setYDesired(float yd) {yDesired = yd;}
+
+	float getXDesired() const {return xDesired;}
+	float getYDesired() const {return yDesired;}
+
+	float getInternalXDesired() const {return internalXDesired;}
+	float getInternalYDesired() const {return internalYDesired;}
+
+	bool outerControlFlag = false;
 
 
 protected:
 	virtual void process(float timestep);
 
-	float ux, uy;
-
-	double uk, ukm1, ukm2, ukm3, ukm4;
-	double ek, ekm1, ekm2, ekm3;
-
-	double ku, kum1, kum2, kum3, kum4;
-	double ke, kem1, kem2, kem3;
+	float ux, uy, xDesired, yDesired, internalXDesired, internalYDesired;
 
 	TouchScreen *screen;
-	PID *ctrlx, *ctrly;
-
-	double target;
-
-	float xPos, yPos;
-
-	//double m_y, m_theta, m_yDot;
-	//double m_yNext, m_thetaNext, m_yDotNext;
-
-	float dt;
-	long long tPrev, t;
-
-	/*
-	float ALC[3][3];
-	float B[3];
-	float C[3];
-	float L[3];
-	float K[3];
-	*/
+	PID *ctrlx, *ctrly, *outerCtrlx, *outerCtrly;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -10,8 +10,8 @@ public:
 
 	PID() : m_Kp(1), m_Ki(0), m_Kd(0), m_minOutput(-INFINITY), m_maxOutput(INFINITY){}
 
-	float compute(float setpoint, float input, float timestep);
-	float compute2(float setpoint, float input, float timestep, float deriv);
+	float compute(float setpoint, float input, float timestep, float deriv);
+	float testCompute(float setpoint, float input, float timestep);
 
 	void reset();
 
@@ -31,6 +31,9 @@ private:
 
 	float m_errorIntegral;
 	float m_previousError;
+
+	float m_error_km1, m_error_km2;
+	float m_output_km1;
 
 	float m_Kp;
 	float m_Ki;

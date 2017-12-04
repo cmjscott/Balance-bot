@@ -74,7 +74,7 @@ void TouchScreen::begin()
 
 void TouchScreen::getPos(float &x, float &y)
 {
-	if (touch.touched())
+	if (touch.touched() && ~m_noTouchFlag)
 	{
     while (! touch.bufferEmpty()) {
       touch.readData(&m_xMeasure, &m_yMeasure, &m_zMeasure);
@@ -83,11 +83,14 @@ void TouchScreen::getPos(float &x, float &y)
     touch.writeRegister8(STMPE_INT_STA, 0xFF); // reset all ints
 		x = m_xPos;
 		y = m_yPos;
+		m_clock.restart();
 	}
 	else
 	{
-		//x = 0;
-		//y = 0;
+		if (m_clock.getElapsedTime() > m_timeout)
+		{
+			m_noTouchFlag = true;
+		}
 	}
 }
 
