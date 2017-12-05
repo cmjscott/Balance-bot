@@ -32,6 +32,8 @@ float xOffset = 1.25;
 
 void setup()
 {
+	pinMode(13, OUTPUT);
+	digitalWrite(13, HIGH);
 	Serial.begin(115200);
 	Serial1.begin(115200);
 
