@@ -1,4 +1,4 @@
-#include "Ycontroller.h"
+#include "Controller.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void Ycontroller::config(TouchScreen& _screen, PID& _PIDx, PID& _PIDy, PID& _outerPIDx, PID& _outerPIDy)
