@@ -112,13 +112,6 @@ void TouchScreen::process(float timestep)
 		m_ySamples[i] = m_ySamples[i+1];
 	}
 	getPos(m_xSamples[SGFILTER_NP - 1], m_ySamples[SGFILTER_NP - 1]);
-
-	/*
-	Serial.print(getX()); Serial.print(" ");
-	Serial.print(getY()); Serial.print(" ");
-	Serial.print(getDX()); Serial.print(" ");
-	Serial.print(getDY()); Serial.print(" ");
-	Serial.println(millis()); //*/
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

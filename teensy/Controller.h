@@ -12,7 +12,7 @@
 class Ycontroller : public PeriodicProcess
 {
 public:
-	void config(TouchScreen& _screen, PID& _PIDx, PID& _PIDy, PID& _outerPIDx, PID& _outerPIDy);
+	void config(TouchScreen& _screen, PID& _PIDx, PID& _PIDy);
 	void begin();
 	void reset();
 
@@ -25,19 +25,13 @@ public:
 	float getXDesired() const {return xDesired;}
 	float getYDesired() const {return yDesired;}
 
-	float getInternalXDesired() const {return internalXDesired;}
-	float getInternalYDesired() const {return internalYDesired;}
-
-	bool outerControlFlag = false;
-
-
 protected:
 	virtual void process(float timestep);
 
-	float ux, uy, xDesired, yDesired, internalXDesired, internalYDesired;
+	float ux, uy, xDesired, yDesired;
 
 	TouchScreen *screen;
-	PID *ctrlx, *ctrly, *outerCtrlx, *outerCtrly;
+	PID *ctrlx, *ctrly;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

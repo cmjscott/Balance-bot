@@ -24,8 +24,6 @@ public:
 	float getMinOutput() const {return m_minOutput;}
 	float getMaxOutput() const {return m_maxOutput;}
 
-	void load(int address);
-	void save(int address) const;
 
 private:
 
